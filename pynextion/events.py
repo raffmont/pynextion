@@ -18,7 +18,7 @@ def ensure_has_end(msg):
         raise(Exception("Message must end with 0xff 0xff 0xff"))
 
 
-class MsgEvent:
+class AbstractMsgEvent:
     EXPECTED_LENGTH = None
     FIRST_BYTE = None
 
@@ -36,7 +36,7 @@ class MsgEvent:
             raise(Exception(f"Event message must have {expected_first_byte} as first byte not {first_byte}"))
 
 
-class TouchEvent(MsgEvent):
+class TouchEvent(AbstractMsgEvent):
     EXPECTED_LENGTH = 7
     FIRST_BYTE = Return.Code.EVENT_TOUCH_HEAD
 
@@ -63,7 +63,7 @@ class TouchEvent(MsgEvent):
         return TouchEvent(code, pid, cid, tevts)
 
 
-class CurrentPageIDHeadEvent(MsgEvent):
+class CurrentPageIDHeadEvent(AbstractMsgEvent):
     EXPECTED_LENGTH = 5
     FIRST_BYTE = Return.Code.CURRENT_PAGE_ID_HEAD
 
@@ -84,7 +84,7 @@ class CurrentPageIDHeadEvent(MsgEvent):
         return CurrentPageIDHeadEvent(code, pid)
 
 
-class PositionHeadEvent(MsgEvent):
+class PositionHeadEvent(AbstractMsgEvent):
     EXPECTED_LENGTH = 9
     FIRST_BYTE = Return.Code.EVENT_POSITION_HEAD
 
@@ -111,7 +111,7 @@ class PositionHeadEvent(MsgEvent):
         return PositionHeadEvent(code, x, y, tevts)
 
 
-class SleepPositionHeadEvent(MsgEvent):
+class SleepPositionHeadEvent(AbstractMsgEvent):
     EXPECTED_LENGTH = 9
     FIRST_BYTE = Return.Code.EVENT_SLEEP_POSITION_HEAD
 
@@ -135,10 +135,10 @@ class SleepPositionHeadEvent(MsgEvent):
         x = (msg[1] << 8) + msg[2]
         y = (msg[3] << 8) + msg[4]
         tevts = Event.Touch(msg[5])
-        return PositionHeadEvent(code, x, y, tevts)
+        return SleepPositionHeadEvent(code, x, y, tevts)
 
 
-class StringHeadEvent(MsgEvent):
+class StringHeadEvent(AbstractMsgEvent):
     EXPECTED_LENGTH = None
     FIRST_BYTE = Return.Code.STRING_HEAD
 
@@ -159,7 +159,7 @@ class StringHeadEvent(MsgEvent):
         return StringHeadEvent(code, value)
 
 
-class NumberHeadEvent(MsgEvent):
+class NumberHeadEvent(AbstractMsgEvent):
     EXPECTED_LENGTH = 8
     FIRST_BYTE = Return.Code.NUMBER_HEAD
 
@@ -181,3 +181,20 @@ class NumberHeadEvent(MsgEvent):
         value = msg[1] + (msg[2] << 8) + (msg[3] << 16) + (msg[4] << 24)
         signed_value = ctypes.c_int32(value).value
         return NumberHeadEvent(code, value, signed_value)
+
+
+D_BYTE0_EVENT = {
+    Return.Code.EVENT_TOUCH_HEAD.value: TouchEvent,
+    Return.Code.CURRENT_PAGE_ID_HEAD.value: CurrentPageIDHeadEvent,
+    Return.Code.EVENT_POSITION_HEAD.value: PositionHeadEvent,
+    Return.Code.EVENT_SLEEP_POSITION_HEAD.value: SleepPositionHeadEvent,
+    Return.Code.STRING_HEAD.value: StringHeadEvent,
+    Return.Code.NUMBER_HEAD.value: NumberHeadEvent
+}
+
+
+class MsgEvent():
+    @classmethod
+    def parse(cls, msg):
+        evt_typ = D_BYTE0_EVENT[msg[0]]
+        return evt_typ.parse(msg)
