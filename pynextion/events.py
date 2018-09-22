@@ -1,4 +1,5 @@
 from enum import Enum
+import ctypes
 from .constants import Return
 
 
@@ -178,6 +179,5 @@ class NumberHeadEvent(MsgEvent):
         code = Return.Code(msg[0])
         cls.ensure_has_expected_first_byte(code)
         value = msg[1] + (msg[2] << 8) + (msg[3] << 16) + (msg[4] << 24)
-        # signed_value = reinterpret(Int32, value)
-        signed_value = -1
+        signed_value = ctypes.c_int32(value).value
         return NumberHeadEvent(code, value, signed_value)
