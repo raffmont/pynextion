@@ -31,7 +31,7 @@ def cls(nexSerial, colour=None):
     >>> cls(nexSerial)
     """
     colour = _init_colour(colour)
-    return nexSerial.send(f"cls {colour}")
+    return nexSerial.send("cls %s" % colour)
 
 
 def rectangle(nexSerial, x1, y1, x2, y2, colour=None, mode=Background.NOBACKCOLOUR):
@@ -47,11 +47,11 @@ def rectangle(nexSerial, x1, y1, x2, y2, colour=None, mode=Background.NOBACKCOLO
     """
     colour = _init_colour(colour)
     if mode == Background.NOBACKCOLOUR:
-        return nexSerial.send(f"draw {x1},{y1},{x2},{y2},{colour}")
+        return nexSerial.send("draw %s,%s,%s,%s,%s" % (x1, y1, x2, y2, colour)
     elif mode == Background.SOLIDCOLOUR:
         w = x2 - x1
         h = y2 - y1
-        return nexSerial.send(f"fill {x1},{y1},{w},{h},{colour}")
+        return nexSerial.send("fill %s,%s,%s,%s,%s" % (x1, y1, w, h, colour))
     else:
         raise(Exception("Unsupported $mode"))
 
@@ -70,9 +70,9 @@ def circle(nexSerial, x, y, r, colour=None, mode=Background.NOBACKCOLOUR):
     # x, y, r = UInt16.((x, y, r))
     colour = _init_colour(colour)
     if mode == Background.NOBACKCOLOUR:
-        return nexSerial.send(f"cir {x},{y},{r},{colour}")
+        return nexSerial.send("cir %s,%s,%s,%s" % (x, y, r, colour))
     elif mode == Background.SOLIDCOLOUR:
-        return nexSerial.send(f"cirs {x},{y},{r},{colour}")
+        return nexSerial.send("cirs %s,%s,%s,%s" % (x, y, r, colour))
     else:
         raise(Exception("Unsupported $mode"))
 
@@ -102,7 +102,7 @@ def xstr(nexSerial, s, x, y, w, h,
     xcenter = xcenter.value
     ycenter = ycenter.value
     sta = sta.value
-    return nexSerial.send(f"xstr {x},{y},{w},{h},{fontid},{fontcolor},{backcolor},{xcenter},{ycenter},{sta},\"{s}\"")
+    return nexSerial.send("xstr %s,%s,%s,%s,%s,%s,%s,%s,%s,%s,\"%s\"" % (x, y, w, h, fontid, fontcolor, backcolor, xcenter, ycenter, sta, s)
 
 
 def line(nexSerial, x1, y1, x2, y2, colour=None):
@@ -112,7 +112,7 @@ def line(nexSerial, x1, y1, x2, y2, colour=None):
     """
     # x1, y1, x2, y2 = UInt16.((x1, y1, x2, y2))
     colour = _init_colour(colour)
-    return nexSerial.send(f"line {x1},{y1},{x2},{y2},{colour}")
+    return nexSerial.send("line %s,%s,%s,%s,%s" % (x1, y1, x2, y2, colour))
 
 
 def picture(nexSerial, x, y, pic, w=None, h=None, x0=None, y0=None):
@@ -123,8 +123,8 @@ def picture(nexSerial, x, y, pic, w=None, h=None, x0=None, y0=None):
     # x, y = UInt16.((x, y))
     picid = pic.id
     if w is None and x0 is None:
-        return nexSerial.send(f"pic {x},{y},{picid}")
+        return nexSerial.send("pic %s,%s,%s" % (x, y, picid))
     elif x0 is None:
-        return nexSerial.send(f"picq {x},{y},{w},{h},{picid}")
+        return nexSerial.send("picq %s,%s,%s,%s,%s" % (x, y, w, h, picid))
     else:
-        return nexSerial.send(f"xpic {x},{y},{w},{h},{x0},{y0},{picid}")  # xpic or picq?
+        return nexSerial.send("xpic %s,%s,%s,%s,%s,%s,%s" % (x, y, w, h, x0, y0, picid))  # xpic or picq?

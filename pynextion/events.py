@@ -27,13 +27,13 @@ class AbstractMsgEvent:
         expected_length = cls.EXPECTED_LENGTH
         n = len(msg)
         if expected_length is not None and n != expected_length:
-            raise(Exception(f"Event message must have {expected_length} bytes not {n}"))
+            raise(Exception("Event message must have %d bytes not %d" % (expected_length, n)))
 
     @classmethod
     def ensure_has_expected_first_byte(cls, first_byte):
         expected_first_byte = cls.FIRST_BYTE
         if first_byte != expected_first_byte:
-            raise(Exception(f"Event message must have {expected_first_byte} as first byte not {first_byte}"))
+            raise(Exception("Event message must have %d as first byte not %d" % (expected_first_byte, first_byte)))
 
 
 class TouchEvent(AbstractMsgEvent):
