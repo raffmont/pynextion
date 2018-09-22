@@ -47,7 +47,7 @@ def rectangle(nexSerial, x1, y1, x2, y2, colour=None, mode=Background.NOBACKCOLO
     """
     colour = _init_colour(colour)
     if mode == Background.NOBACKCOLOUR:
-        return nexSerial.send("draw %s,%s,%s,%s,%s" % (x1, y1, x2, y2, colour)
+        return nexSerial.send("draw %s,%s,%s,%s,%s" % (x1, y1, x2, y2, colour))
     elif mode == Background.SOLIDCOLOUR:
         w = x2 - x1
         h = y2 - y1
@@ -102,7 +102,7 @@ def xstr(nexSerial, s, x, y, w, h,
     xcenter = xcenter.value
     ycenter = ycenter.value
     sta = sta.value
-    return nexSerial.send("xstr %s,%s,%s,%s,%s,%s,%s,%s,%s,%s,\"%s\"" % (x, y, w, h, fontid, fontcolor, backcolor, xcenter, ycenter, sta, s)
+    return nexSerial.send("xstr %s,%s,%s,%s,%s,%s,%s,%s,%s,%s,\"%s\"" % (x, y, w, h, fontid, fontcolor, backcolor, xcenter, ycenter, sta, s))
 
 
 def line(nexSerial, x1, y1, x2, y2, colour=None):
